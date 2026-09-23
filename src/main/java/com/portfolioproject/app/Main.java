@@ -1,30 +1,30 @@
 package com.portfolioproject.app;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import com.portfolioproject.model.User;
 import com.portfolioproject.model.Stock;
+import com.portfolioproject.model.MutualFund;
+import com.portfolioproject.model.Holding;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
 
-    static Scanner scanner = new Scanner(System.in);
-
-    static User user;
-
-    static ArrayList<Stock> stockHoldings = new ArrayList<>();
-    static ArrayList<MutualFund> mutualFundHoldings = new ArrayList<>();
+    // Store all users
+    static Map<String, User> users = new HashMap<>();
 
     public static void main(String[] args) {
 
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("=====================================");
+        System.out.println("   STOCK PORTFOLIO MANAGEMENT SYSTEM");
+        System.out.println("=====================================");
+
         int choice;
 
-        System.out.println("=====================================");
-        System.out.println("     STOCK PORTFOLIO MANAGEMENT");
-        System.out.println("=====================================");
-
         do {
-
             System.out.println();
             System.out.println("----------- MENU -----------");
             System.out.println("1. Create User");
@@ -35,27 +35,24 @@ public class Main {
             System.out.println("6. Exit");
             System.out.println("----------------------------");
 
-            System.out.print("Enter your choice: ");
-
-            choice = scanner.nextInt();
-            scanner.nextLine();
+            choice = readInt(sc, "Enter your choice: ");
 
             switch (choice) {
 
                 case 1:
-                    createUser();
+                    createUser(sc);
                     break;
 
                 case 2:
-                    addStockHolding();
+                    addStockHolding(sc);
                     break;
 
                 case 3:
-                    addMutualFundHolding();
+                    addMutualFundHolding(sc);
                     break;
 
                 case 4:
-                    displayUser();
+                    displayUsers();
                     break;
 
                 case 5:
@@ -65,238 +62,370 @@ public class Main {
                 case 6:
                     System.out.println();
                     System.out.println(
-                        "Thank you for using Stock Portfolio Management!"
+                            "Thank you for using Stock Portfolio Management System."
                     );
                     break;
 
                 default:
-                    System.out.println();
-                    System.out.println("Invalid choice! Please enter 1-6.");
+                    System.out.println(
+                            "Invalid choice. Please enter a number from 1 to 6."
+                    );
             }
 
         } while (choice != 6);
 
-        scanner.close();
+        sc.close();
     }
 
-
-    // =========================================
-    // CASE 1 - CREATE USER
-    // =========================================
-
-    public static void createUser() {
+    // =====================================================
+    // CREATE USER
+    // =====================================================
+    private static void createUser(Scanner sc) {
 
         System.out.println();
-        System.out.println("---------- CREATE USER ----------");
+        System.out.println("--- Create User ---");
 
         System.out.print("Enter User ID: ");
-        String userId = scanner.nextLine();
+        String userId = sc.nextLine().trim();
 
-        System.out.print("Enter Name: ");
-        String name = scanner.nextLine();
+        if (userId.isEmpty()) {
+            System.out.println("User ID cannot be empty.");
+            return;
+        }
+
+        if (findUser(userId) != null) {
+            System.out.println("User ID already exists.");
+            return;
+        }
+
+        System.out.print("Enter User Name: ");
+        String name = sc.nextLine().trim();
+
+        if (name.isEmpty()) {
+            System.out.println("User name cannot be empty.");
+            return;
+        }
 
         System.out.print("Enter Email: ");
-        String email = scanner.nextLine();
+        String email = sc.nextLine().trim();
 
-        user = new User(userId, name, email);
+        if (email.isEmpty()) {
+            System.out.println("Email cannot be empty.");
+            return;
+        }
 
-        System.out.println();
+         User newUser = new User(userId, name, email);
+        
+        //Add user to users list
+         users.put(userId, newUser);
+           
         System.out.println("User created successfully!");
     }
 
+    // =====================================================
+    // ADD STOCK HOLDING
+    // =====================================================
+    private static void addStockHolding(Scanner sc) {
 
-    // =========================================
-    // CASE 2 - ADD STOCK HOLDING
-    // =========================================
-
-    public static void addStockHolding() {
-
-        if (user == null) {
-            System.out.println();
-            System.out.println("Please create a user first!");
+        if (users.isEmpty()) {
+            System.out.println("Please create a user first.");
             return;
         }
 
         System.out.println();
-        System.out.println("---------- ADD STOCK HOLDING ----------");
+        System.out.println("--- Add Stock Holding ---");
+
+        System.out.print("Enter User ID: ");
+        String userId = sc.nextLine().trim();
+
+        User user = findUser(userId);
+
+        if (user == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        System.out.print("Enter Holding ID: ");
+        String holdingId = sc.nextLine().trim();
+
+        if (holdingId.isEmpty()) {
+            System.out.println("Holding ID cannot be empty.");
+            return;
+        }
 
         System.out.print("Enter Stock ID: ");
-        String stockId = scanner.nextLine();
+        String stockId = sc.nextLine().trim();
+
+        if (stockId.isEmpty()) {
+            System.out.println("Stock ID cannot be empty.");
+            return;
+        }
 
         System.out.print("Enter Stock Name: ");
-        String stockName = scanner.nextLine();
+        String stockName = sc.nextLine().trim();
 
-        System.out.print("Enter Stock Price: ");
-        double price = scanner.nextDouble();
-        scanner.nextLine();
+        if (stockName.isEmpty()) {
+            System.out.println("Stock name cannot be empty.");
+            return;
+        }
 
-        Stock stock = new Stock(stockId, stockName, price);
+        double purchasePrice = readDouble(
+                sc,
+                "Enter Purchase Price: "
+        );
 
-        stockHoldings.add(stock);
+        double currentPrice = readDouble(
+                sc,
+                "Enter Current Price: "
+        );
 
-        System.out.println();
+        int quantity = readPositiveInt(
+                sc,
+                "Enter Quantity: "
+        );
+
+        Stock stock = new Stock(
+                stockId,
+                stockName,
+                purchasePrice,
+                currentPrice
+        );
+
+        Holding holding = new Holding(
+                holdingId,
+                stock,
+                quantity
+        );
+
+        user.addHolding(holding);
+
         System.out.println("Stock holding added successfully!");
     }
 
+    // =====================================================
+    // ADD MUTUAL FUND HOLDING
+    // =====================================================
+    private static void addMutualFundHolding(Scanner sc) {
 
-    // =========================================
-    // CASE 3 - ADD MUTUAL FUND HOLDING
-    // =========================================
-
-    public static void addMutualFundHolding() {
-
-        if (user == null) {
-            System.out.println();
-            System.out.println("Please create a user first!");
+        if (users.isEmpty()) {
+            System.out.println("Please create a user first.");
             return;
         }
 
         System.out.println();
-        System.out.println(
-            "---------- ADD MUTUAL FUND HOLDING ----------"
-        );
+        System.out.println("--- Add Mutual Fund Holding ---");
+
+        System.out.print("Enter User ID: ");
+        String userId = sc.nextLine().trim();
+
+        User user = findUser(userId);
+
+        if (user == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        System.out.print("Enter Holding ID: ");
+        String holdingId = sc.nextLine().trim();
+
+        if (holdingId.isEmpty()) {
+            System.out.println("Holding ID cannot be empty.");
+            return;
+        }
 
         System.out.print("Enter Mutual Fund ID: ");
-        String fundId = scanner.nextLine();
+        String mutualFundId = sc.nextLine().trim();
+
+        if (mutualFundId.isEmpty()) {
+            System.out.println("Mutual Fund ID cannot be empty.");
+            return;
+        }
 
         System.out.print("Enter Mutual Fund Name: ");
-        String fundName = scanner.nextLine();
+        String mutualFundName = sc.nextLine().trim();
 
-        System.out.print("Enter Mutual Fund Price: ");
-        double price = scanner.nextDouble();
-        scanner.nextLine();
+        if (mutualFundName.isEmpty()) {
+            System.out.println("Mutual Fund name cannot be empty.");
+            return;
+        }
 
-        MutualFund fund = new MutualFund(
-            fundId,
-            fundName,
-            price
+        double purchasePrice = readDouble(
+                sc,
+                "Enter Purchase Price: "
         );
 
-        mutualFundHoldings.add(fund);
+        double nav = readDouble(
+                sc,
+                "Enter NAV: "
+        );
 
-        System.out.println();
+        int quantity = readPositiveInt(
+                sc,
+                "Enter Quantity: "
+        );
+
+        MutualFund mutualFund = new MutualFund(
+                mutualFundId,
+                mutualFundName,
+                purchasePrice,
+                nav
+        );
+
+        Holding holding = new Holding(
+                holdingId,
+                mutualFund,
+                quantity
+        );
+
+        user.addHolding(holding);
+
         System.out.println("Mutual fund holding added successfully!");
     }
 
+    // =====================================================
+    // DISPLAY USERS
+    // =====================================================
+    private static void displayUsers() {
 
-    // =========================================
-    // CASE 4 - DISPLAY USER
-    // =========================================
-
-    public static void displayUser() {
-
-        System.out.println();
-        System.out.println("---------- USER DETAILS ----------");
-
-        if (user == null) {
-            System.out.println("No user created yet.");
+        if (users.isEmpty()) {
+            System.out.println("No users created.");
             return;
         }
 
-        System.out.println("User ID : " + user.getUserid());
-        System.out.println("Name    : " + user.getName());
-        System.out.println("Email   : " + user.getEmail());
-    }
-
-
-    // =========================================
-    // CASE 5 - DISPLAY HOLDINGS
-    // =========================================
-
-    public static void displayHoldings() {
-
         System.out.println();
-        System.out.println("========== HOLDINGS ==========");
+        System.out.println("--- User Details ---");
+       
+        for (User user : users.values() ) 
+        {
+        	user.display();
+        	System.out.println("------------------");
+          }
+        }
+       
 
-        if (user == null) {
-            System.out.println("No user created yet.");
+    // =====================================================
+    // DISPLAY HOLDINGS
+    // =====================================================
+    private static void displayHoldings() {
+
+        if (users.isEmpty()) {
+            System.out.println("No users created.");
             return;
         }
 
-        // =====================================
-        // STOCK HOLDINGS
-        // =====================================
-
         System.out.println();
-        System.out.println("--- STOCK HOLDINGS ---");
+        System.out.println("--- Holdings ---");
 
-        if (stockHoldings.isEmpty()) {
+         for (User user : users.values() ) {
 
-            System.out.println("No stock holdings.");
+            System.out.println();
+            System.out.println("User ID: " + user.getUserid());
+            System.out.println("User Name: " + user.getName());
 
-        } else {
+            if (user.getHoldings() == null ||
+                    user.getHoldings().isEmpty()) {
 
-            for (Stock stock : stockHoldings) {
+                System.out.println("No holdings available.");
 
-                System.out.println("Stock ID   : " + stock.getStockid());
-                System.out.println("Stock Name : " + stock.getStockname());
-                System.out.println("Price      : " + stock.getPrice());
-                System.out.println();
+            } else {
+
+                for (Holding holding : user.getHoldings()) {
+                    System.out.println(holding);
+                }
             }
+
+            System.out.println("----------------------------");
         }
+    }
 
+    // =====================================================
+    // FIND USER BY USER ID
+    // =====================================================
+    private static User findUser(String userid) 
 
-        // =====================================
-        // MUTUAL FUND HOLDINGS
-        // =====================================
+    	{
+    		return users.get(userid);
+    	}
+    
 
-        System.out.println("--- MUTUAL FUND HOLDINGS ---");
+    // =====================================================
+    // READ INTEGER SAFELY
+    // =====================================================
+    private static int readInt(Scanner sc, String message) {
 
-        if (mutualFundHoldings.isEmpty()) {
+        while (true) {
 
-            System.out.println("No mutual fund holdings.");
+            System.out.print(message);
 
-        } else {
+            String input = sc.nextLine().trim();
 
-            for (MutualFund fund : mutualFundHoldings) {
+            try {
+                return Integer.parseInt(input);
 
-                System.out.println("Fund ID    : " + fund.getFundId());
-                System.out.println("Fund Name  : " + fund.getFundName());
-                System.out.println("Price      : " + fund.getPrice());
-                System.out.println();
+            } catch (NumberFormatException e) {
+                System.out.println(
+                        "Invalid input. Please enter a valid integer."
+                );
             }
         }
     }
 
+    // =====================================================
+    // READ POSITIVE INTEGER
+    // =====================================================
+    private static int readPositiveInt(
+            Scanner sc,
+            String message) {
 
-    // =========================================
-    // MUTUAL FUND CLASS
-    // =========================================
+        while (true) {
 
-    static class MutualFund {
+            int value = readInt(sc, message);
 
-        private String fundId;
-        private String fundName;
-        private double price;
+            if (value > 0) {
+                return value;
+            }
 
-        public MutualFund(
-                String fundId,
-                String fundName,
-                double price) {
-
-            this.fundId = fundId;
-            this.fundName = fundName;
-            this.price = price;
+            System.out.println(
+                    "Quantity must be greater than 0."
+            );
         }
+    }
 
-        public String getFundId() {
-            return fundId;
-        }
+    // =====================================================
+    // READ DOUBLE SAFELY
+    // =====================================================
+    private static double readDouble(
+            Scanner sc,
+            String message) {
 
-        public String getFundName() {
-            return fundName;
-        }
+        while (true) {
 
-        public double getPrice() {
-            return price;
+            System.out.print(message);
+
+            String input = sc.nextLine().trim();
+
+            try {
+
+                double value = Double.parseDouble(input);
+
+                if (value < 0) {
+                    System.out.println(
+                            "Value cannot be negative."
+                    );
+                    continue;
+                }
+
+                return value;
+
+            } catch (NumberFormatException e) {
+
+                System.out.println(
+                        "Invalid input. Please enter a valid number."
+                );
+            }
         }
     }
 }
-        
-    
-        
-        
-   
-  
-	
+
+
 

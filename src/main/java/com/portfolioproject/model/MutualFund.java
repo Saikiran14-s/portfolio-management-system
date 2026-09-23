@@ -4,44 +4,36 @@ public class MutualFund extends Assets {
 
     private double nav;
 
-    // Constructor
-    public MutualFund(String assetId,
-                      String assetName,
-                      double purchasePrice,
-                      double nav) {
+    public MutualFund(
+            String mutualFundId,
+            String mutualFundName,
+            double purchasePrice,
+            double nav) {
 
-        super(assetId, assetName, purchasePrice);
+        super(mutualFundId, mutualFundName, purchasePrice);
 
         this.nav = nav;
     }
 
-    // Method overriding
-    @Override
-    public double CalculateCurrentValue() {
-    	
-        return nav;
-    }
-
-    // Getter
     public double getNav() {
-
         return nav;
     }
 
-    // Setter
     public void setNav(double nav) {
-
         this.nav = nav;
+    }
+
+    @Override
+    public double calculateCurrentValue() {
+        return nav;
     }
 
     @Override
     public String toString() {
 
-        return "MutualFund{" +
-                "Asset ID='" + getAssetId() + '\'' +
-                ", Asset Name='" + getAssetName() + '\'' +
-                ", Purchase Price=" + getPurchasePrice() +
-                ", NAV=" + nav +
-                '}';
+        return "Mutual Fund ID: " + getAssetId()
+                + ", Mutual Fund Name: " + getAssetName()
+                + ", Purchase Price: " + getPurchasePrice()
+                + ", NAV: " + nav;
     }
 }

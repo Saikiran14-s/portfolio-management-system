@@ -1,31 +1,67 @@
-    package com.portfolioproject.model;
+package com.portfolioproject.model;
 
-	public class Holding {
+public class Holding {
 
-	    private String holdingId;
-	    private String assetName;
-	    private double quantity;
-	    private double purchasePrice;
+    private String holdingId;
+    private Stock stock;
+    private MutualFund mutualFund;
+    private int quantity;
 
-	    // Constructor
-	    public Holding(String holdingId, String assetName, double quantity, double purchasePrice) {
-	        this.holdingId = holdingId;
-	        this.assetName = assetName;
-	        this.quantity = quantity;
-	        this.purchasePrice = purchasePrice;
-	    }
+    // Constructor for Stock holding
+    public Holding(String holdingId, Stock stock, int quantity) {
 
-	    // Getters
-	    public String getHoldingId() {
-	        return holdingId;
-	    }
+        this.holdingId = holdingId;
+        this.stock = stock;
+        this.quantity = quantity;
+        this.mutualFund = null;
+    }
 
-	    public String getAssetName() {
-	        return assetName;
-	    }
+    // Constructor for Mutual Fund holding
+    public Holding(String holdingId, MutualFund mutualFund, int quantity) {
 
-	    public double getQuantity() {
-	        return quantity;
-	    }
+        this.holdingId = holdingId;
+        this.mutualFund = mutualFund;
+        this.quantity = quantity;
+        this.stock = null;
+    }
 
+    // Get Holding ID
+    public String getHoldingId() {
+        return holdingId;
+    }
+
+    // Get Stock
+    public Stock getStock() {
+        return stock;
+    }
+
+    // Get Mutual Fund
+    public MutualFund getMutualFund() {
+        return mutualFund;
+    }
+
+    // Get Quantity
+    public int getQuantity() {
+        return quantity;
+    }
+
+    @Override
+    public String toString() {
+
+        if (stock != null) {
+
+            return "Holding ID: " + holdingId
+                    + ", Stock: " + stock
+                    + ", Quantity: " + quantity;
+
+        } else if (mutualFund != null) {
+
+            return "Holding ID: " + holdingId
+                    + ", Mutual Fund: " + mutualFund
+                    + ", Quantity: " + quantity;
+        }
+
+        return "Holding ID: " + holdingId
+                + ", Quantity: " + quantity;
+    }
 }
