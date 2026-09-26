@@ -1,0 +1,28 @@
+[ {
+  "userid" : "116",
+  "name" : "Prasad",
+  "email" : "prasad06@gmail.com",
+  "holdings" : [ {
+    "holdingId" : "120",
+    "asset" : {
+      "type" : "stock",
+      "assetId" : "150",
+      "assetName" : "Nifty 50",
+      "purchasePrice" : 500000.0,
+      "currentPrice" : 25000.0
+    },
+    "quantity" : 50,
+    "currentValue" : 1250000.0
+  }, {
+    "holdingId" : "120",
+    "asset" : {
+      "type" : "mutualFund",
+      "assetId" : "150",
+      "assetName" : "Canara bank Mutual Fund",
+      "purchasePrice" : 12000.0,
+      "nav" : 555.0
+    },
+    "quantity" : 16,
+    "currentValue" : 8880.0
+  } ]
+} ]

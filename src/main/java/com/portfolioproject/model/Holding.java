@@ -3,65 +3,58 @@ package com.portfolioproject.model;
 public class Holding {
 
     private String holdingId;
-    private Stock stock;
-    private MutualFund mutualFund;
+    private Asset asset;
     private int quantity;
 
-    // Constructor for Stock holding
-    public Holding(String holdingId, Stock stock, int quantity) {
-
-        this.holdingId = holdingId;
-        this.stock = stock;
-        this.quantity = quantity;
-        this.mutualFund = null;
+    // Default constructor - required for Jackson
+    public Holding() {
     }
 
-    // Constructor for Mutual Fund holding
-    public Holding(String holdingId, MutualFund mutualFund, int quantity) {
-
+    // Parameterized constructor
+    public Holding(String holdingId, Asset asset, int quantity) {
         this.holdingId = holdingId;
-        this.mutualFund = mutualFund;
+        this.asset = asset;
         this.quantity = quantity;
-        this.stock = null;
     }
 
-    // Get Holding ID
+    // Getters
     public String getHoldingId() {
         return holdingId;
     }
 
-    // Get Stock
-    public Stock getStock() {
-        return stock;
+    public Asset getAsset() {
+        return asset;
     }
 
-    // Get Mutual Fund
-    public MutualFund getMutualFund() {
-        return mutualFund;
-    }
-
-    // Get Quantity
     public int getQuantity() {
         return quantity;
     }
 
+    // Setters - required for Jackson
+    public void setHoldingId(String holdingId) {
+        this.holdingId = holdingId;
+    }
+
+    public void setAsset(Asset asset) {
+        this.asset = asset;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    // Calculate total current value
+    public double getCurrentValue() {
+        return asset.calculateCurrentValue() * quantity;
+    }
+
     @Override
     public String toString() {
-
-        if (stock != null) {
-
-            return "Holding ID: " + holdingId
-                    + ", Stock: " + stock
-                    + ", Quantity: " + quantity;
-
-        } else if (mutualFund != null) {
-
-            return "Holding ID: " + holdingId
-                    + ", Mutual Fund: " + mutualFund
-                    + ", Quantity: " + quantity;
-        }
-
-        return "Holding ID: " + holdingId
-                + ", Quantity: " + quantity;
+        return "Holding{" +
+                "Holding ID='" + holdingId + '\'' +
+                ", Asset=" + asset +
+                ", Quantity=" + quantity +
+                ", Current Value=" + getCurrentValue() +
+                '}';
     }
 }
